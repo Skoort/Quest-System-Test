@@ -1,0 +1,52 @@
+<Quest>
+    <Id>2</Id>
+    <Name>Lost and Found</Name>
+    <Desc>I seem to have misplaced some of my things in that chest over there. Would you please find them for me?</Desc>
+    <TurnInText>That probably took a while. As thanks, I will let you keep those.</TurnInText>
+    <Npc>Cuboi</Npc>
+    <UnlocksId/>
+    <Objectives>
+        <Objective>
+            <Type>Collect Items</Type>
+            <ItemName>Basket</ItemName>
+            <Amount>1</Amount>
+            <RequiredForTurnIn>true</RequiredForTurnIn>
+        </Objective>
+        <Objective>
+            <Type>Collect Items</Type>
+            <ItemName>Apple</ItemName>
+            <Amount>1</Amount>
+            <RequiredForTurnIn>true</RequiredForTurnIn>
+        </Objective>
+        <Objective>
+            <Type>Collect Items</Type>
+            <ItemName>Crystal mirror</ItemName>
+            <Amount>1</Amount>
+            <RequiredForTurnIn>true</RequiredForTurnIn>
+        </Objective>
+        <Objective>
+            <Type>Collect Items</Type>
+            <ItemName>Ancient coin</ItemName>
+            <Amount>1</Amount>
+            <RequiredForTurnIn>true</RequiredForTurnIn>
+        </Objective>
+    </Objectives>
+    <Rewards>
+        <Reward>
+            <ItemName>Basket</ItemName>
+            <Quantity>1</Quantity>
+        </Reward>
+        <Reward>
+            <ItemName>Apple</ItemName>
+            <Quantity>1</Quantity>
+        </Reward>
+        <Reward>
+            <ItemName>Crystal mirror</ItemName>
+            <Quantity>1</Quantity>
+        </Reward>
+        <Reward>
+            <ItemName>Ancient coin</ItemName>
+            <Quantity>1</Quantity>
+        </Reward>
+    </Rewards>
+</Quest>

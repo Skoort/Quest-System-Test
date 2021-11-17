@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ca641ce8944d234ea0b3bdb736c5347, type: 3}
+  m_Name: Mace
+  m_EditorClassIdentifier: 
+  _name: Heavy mace
+  _desc: A wooden rod with a spiked iron ball affixed to the end.
+  _maxStack: 1
+  _isWeapon: 1
+  _weaponPrefab: {fileID: 8820843650506602234, guid: f2ea91261b512ff459c41aace9cab626,
+    type: 3}
+  _isConsumable: 0
+  _worth: 0
+  _sprite: {fileID: -7982175388554599277, guid: bc3c700f16f0aa642b2e07a14526a794,
+    type: 3}

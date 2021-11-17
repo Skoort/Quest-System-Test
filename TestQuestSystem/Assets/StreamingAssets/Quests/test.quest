@@ -1,0 +1,37 @@
+<Quest>
+    <Id>1</Id>
+    <Name>The Rise of a Hero</Name>
+    <Desc>It's time for you to take the first step on your path to becoming a hero. Behind me is a chest. Open it and use the sword contained within to defeat all 6 Target Dummies.</Desc>
+    <TurnInText>I'm impressed! I believe you have what it takes to save our world from evil. I would like you to have this. You will have more use for it than I.</TurnInText>
+    <Npc>Cubee</Npc>
+    <UnlocksId/>
+    <Objectives>
+        <Objective>
+            <Type>Collect Items</Type>
+            <ItemName>Longsword</ItemName>
+            <Amount>1</Amount>
+            <RequiredForTurnIn>false</RequiredForTurnIn>
+        </Objective>
+        <Objective>
+            <Type>Defeat Enemies</Type>
+            <EnemyName>Practice Dummy</EnemyName>
+            <Amount>6</Amount>
+        </Objective>
+    </Objectives>
+    <Rewards>
+        <Reward>
+            <Choice>
+                <ItemName>Heavy mace</ItemName>
+                <Quantity>1</Quantity>
+            </Choice>
+            <Choice>
+                <ItemName>Dagger</ItemName>
+                <Quantity>1</Quantity>
+            </Choice>
+        </Reward>
+        <Reward>
+            <ItemName>Healing potion</ItemName>
+            <Quantity>5</Quantity>
+        </Reward>
+    </Rewards>
+</Quest>

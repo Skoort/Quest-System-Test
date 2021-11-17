@@ -1,0 +1,277 @@
+              TurnManager              
+                   |                
+             HAS A LIST OF              
+                   |                       CombatAction -- HAS A --> TargetType
+                   V                               
+              CombatEntity --- REFERENCES --> EntityStats  <-- REFERENCES --- Equipment  <- QUESTION: Should Equipment be the prefab, or another Info class like ItemInfo?
+                   |                          + Health                        + OnEquip     } Changes your appearance and modifies your stats, equipping adds the modifiers,
+                   |                          + Magic                         + OnUnequip   } unequipping removes them.
+                   ^                          + Energy                        - readonly MaxHealthMod (+/-)
+                 |   |                        + MaxHealth                     - readonly MaxMagicMod (+/-)
+               |       |                      + MaxMagic                      - readonly MaxEnergyMod (+/-)
+              V         V                     + MaxEnergy                     - readonly StrengthMod (+/-)
+   PcCombatEntity     AiCombatEntity          + Strength                      - readonly AgilityMod (+/-)                                                              
+                                              + Agility                       - readonly EnduranceMod (+/-)    
+                                              + Endurance                     - readonly MagicalAffinityMod (+/-)                                                
+CombatEntity                                  + MagicalAffinity               - readonly DefenseMod (+/-)                                                          
+bool IsActiveCombatEntity { get; }            + Defense                       - readonly AttackMod (+/-)                                                            
+void GiveTurn()                               + Attack                        - readonly LeftHandAttackMod (+/-)                                            
+bool IsComputerControlled { get; }            + LeftHandAttack                - readonly SlotType (Head, Torso, Legs, Feet, Left Hand, Right Hand)  <- Keeping it simple for now.
+                                                                              - readonly ItemInfo
+                                                                                 ^                                             
+PcCombatEntity                                                                   |                                             
+What do you need for this to work?                                           REFERENCES                                                            
+You need to select an Action.                                                    |                                               
+If that Action has a Target, you must select one or more.                        v             
+You must then play out the Action.                                            ItemInfo                       
+                                                                              + readonly IsEquippable                      
+virtually entirely controlled by callbacks from the UI                        + readonly IsUseable                      
+                                                                              + readonly UseAction : UseAction
+                                                                              + readonly Equipment : Equipment
+AiCombatEntity                                                                + readonly Sprite : Sprite
+                                                                              + readonly 
+
+
+
+
+ICombatAction
+- aiDesirability <- how desirable this action is to the AI
+- TargetType TargetType { get; } <- Tells the AI who this action can be used on. From the player perspective, clicking an action will activate it if the TargetType is None, otherwise it will bring up the select menu (more likely a hud above enemies with changing targeting direction, or a camera that looks at your mouse if you have to select an area)
+- Behaviour(EntityStats statsOfUser, List<CombatEntity> targets) <- Does the actual behaviour of the action. The behaviour is partially dependant on the stats of the entity (like damage, etc.). perhaps the targets list is assumed to have been checked to meet the TargetType conditions, but will do an additional debug only check inside the Behaviour just in case this condition is broken. For instance an action might set the CombatEntity's animator to the casting state, which triggers a fireball to shoot out towards and enemy, which then explodes and deals damage to it. 
+- CanUse(CombatEntity) <- Does the CombatEntity have the required resources to use this action?
+
+
+Perhaps IAction, ICombatAction, IUseItemAction, IAttackAction, IBuffAction
+And IAction and ICombatAction have a property ActionType that allows the turn maker to do decision making.
+Perhaps the IAction & ICombatAction have a general Behaviour(List<object> params) and then each individual action
+has both Behaviour(actual params) and Behaviour(List<object> params) which assumes the correct shape of the params and passes it it 
+the actual Behaviour function. This way the responsibility of passing the correct objects is on the user (CombatEntity), since we
+supply a way of verifying the type of action (ActionType) and they can just call the Behaviour function with the parameter list
+than will funnel them into the correct stuff.
+
+
+
+Two different ways you could design target types.
+TargetType:                               TargetType (alternate design):
+- None                                    - None  (Flee, Move, Interact? [pull lever or something])
+- Self (early or very powerful heals)     - Single
+- SingleAlly                              - Multiple
+- SingleEnemy                             - Ally
+- MultipleAllies                          - Enemy
+- MultipleEnemies                         - Self
+- MultipleMixed               
+Mixed:                                    Mixed (only mixed types and None are valid):
+- Self | SingleAlly                       - Single | Self, Single | Ally, Single | Enemy, 
+                                            Single | Ally | Enemy, Multiple | Ally,
+- Self | MultipleAllies                     Multiple | Enemy, Multiple | Ally | Enemy, 
+                                            Single | Self | Ally, Multiple | Self | Ally, 
+                                            Single | Self | Ally | Enemy, Multiple | Self | Ally | Enemy
+
+
+
+var combatEntities = Physics.OverlapSphere(area info)
+    .Select(x => x.GetComponent<CombatEntity>())
+foreach (var combatEntity : combatEntities)
+{
+    TurnManager.Instance.AddParticipant(combatEntity)
+}
+TurnManager.Instance.BeginCombat()
+
+
+
+
+                                                                                                                       
+                                                                                                                       
+                                                                                                                       
+                                                                                                                       
+                                                                                   CombatManager                  EquipmentStatModifier
+                                                                                         |                                  ^
+                                                                                         |                                  |
+                                                                                  REFERENCES MANY                           |   
+                                                                                         |                     Map<SlotType, EquipmentInfo>
+                                                                                         |                                  |
+                                                                                         v                                  |
+                                                                                    CombatEntity ------- HAS A ------> EntityStats                                      
+                                                                                + Equip(Equipment)                     + ... (Has a bunch of values and events.)      
+                                                                                + Unequip(Equipment)                        |                        |                    
+                                                                                         |                                  |                        |
+                                                                                         |                            HAS A LIST OF            HAS A LIST OF
+                                                                                  REFERENCES MANY                           |                        |
+                                                                                         |                                  |                        |
+                                                                                         |                                  v                        v
+                                                                                         v                           TempStatModifier       PermanentStatModifier
+                                                                                    CombatAction
+                                                                                 + Behaviour
+                                                                                 +                                       
+                                                                                                                       
+                                                                                                                       
+                                                                                                                       
+                                                                                                                       
+                                                                                                                       
+                                                                                                                       
+                                                                                                                       
+                                                                                                                       
+                                                                                                                       
+                           Equipment                                                                                             
+                           - Has to change your appearance                                                                                               
+                           - Has to change your EntityStats                                                                                               
+                           -                                                                                                
+                                                                                                                       
+                                                                                                                       
+                                                                                                                       
+                                                                                                                       
+                                                                                                                       
+Buffs and Debuffs:
+- TurnDuration
+- StatusEffect
+- OnBeginTurn  <- Should the Timer be internal or external? How to remove the buff/debuff from the player/vitals?
+- OnEndTurn
+
+3 turn duration, two options:
+- someone casts it on them: turn 1: OnBeginTurn, OnEndTurn; turn 2: OnBeginTurn, OnEndTurn; turn3: OnBeginTurn, OnEndTurn; turn4: expires
+- they cast it on themselves: turn 1: OnEndTurn; turn 2: OnBeginTurn, OnEndTurn; turn3: OnBeginTurn, OnEndTurn; turn4: expires
+
+                                                                                                                       
+Equipment:
+- StatusEffect
+- OnEquip
+- OnUnequip
+                                                                                                                       
+                                                                                                                       
+                                
+ITargetable
++ ShowTargetMarker()
++ HideTargetMarker()
++ OnSelect()
++ OnUnselect()
++ StatusEffects : List<StatusEffect>
+
+
+ITargetable or perhaps just Target
++ EntityStats : EntityStats  <- Can be null if the Targetable has no stats associated with it.
++ BuffManager : BuffManager  <- Can be null if the Targetable cannot receive buffs.
+
+
+
+
+
+
+TurnManager
++ Participants : List<TurnParticipant>
++ Targets : List<ITargetable>
+
+
+
+TurnParticipant
+
+
+
+
+                                            TurnManager ----------------------------------------------------------\
+                                                                                                                   | 
+                                                                                                                   |
+                                                                                                                   | 
+                                                                                                                   |    
+                                                 |                                                                 v
+                                                 v                                                           ITargetable                         
+                                         CombatParticipant                                                   + ShowSelect           
+                                                                                                             + HideSelect                 
+                                                                                                                         
+                                                                                                                         
+                                                                                                                      
+                                                                                                                          
+                                                 |                                                                 |                                                 
+                                                 |                                                                 |                       StatusModifier                     
+                                                 |                                                                 |                       + ... <- Duplicate of EntityStats with v                                                                 |                                different names for variables.
+EntityStats  <--------------------------  EntityStatsManager  <---------------------------------------------------/                                                       
++ ... <- A bunch of random stats.         + AddStatusEffect(StatusEffect effect)                                                                                        
+                                          + RemStatusEffect(StatusEffect effect)                                                                 ^
+                                          + GetBuffs()                               -----------------------------------------------\            |                                 
+                                          + GetDebuffs()                                                                             |           |  
+                                          + OnBeginTurn()                                                                            |           |   
+                                          + OnEndTurn()                                                                              |           | 
+                                          + ... <- A bunch of random readonly properties for the stats.                              v           |
+                                                  ^                                                                             StatusEffect
+                                                  |                                                                             + ... <- A bunch of random stat modifiers.
+                                                  |                                                                             + OnEndTurn
+  Equipment               <--------------  EquipmentManager  ---------------> Modifies appearance.                              + OnBeginTurn                                     
+  + readonly StatusEffect                  + Equip(Equipment)                                                                            
+  + EquipmentSlot                          + Unequip(Equipment)                                                                                                     
+  + ItemInfo                                       ^                                                                             
+         ^                                         |                                                                     
+         |                                         |                                                                     
+         v                                         v                                                                   
+      ItemInfo        <----------------------- Inventory                                                                                                      
+      + ... bunch of random item info          + AddItem(ItemInfo item, int amount=1)                                                                          
+      + IsEquippable : bool                    + RemItem(ItemInfo item, int amount=1)                                                                       
+      + Equipment : Equipment                      |                                                                                            
+      + IsUseable : bool                           |                                                                                    
+      + UseAction : UseAction                      |                                                                                             
+         ^                                         |                                                                       
+         |                                         |                                                                       
+          \------------    SlotInfo    -----------/                                                                       
+                           + Item : ItemInfo                                                                    FleeAction                                         
+                           + Quantity : int                                                                                                        
+                                                                                                                         \
+                                                                                                                          \
+                                                                                                                           \
+                                                                                                                            \         
+                The only question is how this knows which piece of Equipment to equip/unequip?  -------->  EquipmentAction  |        PassAction  
+                                                                                                                            |      
+                                                                                                                         \  |        /         
+                                                                                                                          \ |       /          
+                                                                                                                           \|      /           
+              EntityGlue (MonoBehaviour)  <- Awake sets up the references from these classes to EntityGlue and has getters. \     / 
+              + Inventory                                                                                       ItemAction  |     |  AbilityAction          
+              + EntityTurnManager                                                                                           |     |         
+              + Target                                                                                                   \  |     |  /         
+              + StatusManager                                                                                             \ |     | /               
+              + EquipmentManager                                                                                           \|     |/               
+                                                                                                                            \     /               
+                                                                                                                             \   /                
+                                                                                                                         ICombatAction         
+                                                                                                                         + Behaviour(
+                                                                Allows access to Inventory and StatusManager.  ---------->  EntityGlue user,
+                                                                                                                            EntityGlue[] targets)
+                                                                                                                                  
+                                                                                                                               |   
+                                                                                                                               |   
+                                                                                                                               |      
+                                                                                                                               |
+                                                                                                                               |
+                                                                        Player/Enemy/ITargetable/EntityTurnManager             |                                                                      |                                   |
+                                                                                           |                                   |
+                                                                                    uses an Action ---------------------------/
+                                                                                       targeting
+                                                                                           |
+                                                                                           v
+                            TemporaryStatusEffect <----- handles ------ Player/Enemy/ITargetable/EntityTurnManager                                                            
+                                                                        + OnStartTurn                                               
+                                                                        + OnFinishTurn                                                                      
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                  
+                                                                  
+                                                                  
+           ActiveInventory (ScriptableObject) just references Inventory                                                      
+                  |                                                
+                  |                                                
+                  |                                                
+                  |                                               
+                  v                                                
+              Inventory  ------ List<SlotInfo> ----->  SlotInfo --ItemInfo : ScriptableObject
+                                                       + Item : ItemInfo (ScriptableObject)
+                                                       + Quantity : int
+                                                       + IsEquipped : bool (if this is true, Quantity is necessarily 1, as the stack would be split)
+                                         
+                                         
+                                         
+                                         
+Types of StatusEffects:
+IStatusEffect
+- StatusModEffect
+
+                                         
